@@ -1,16 +1,20 @@
 import { defineStore } from 'pinia'
 
+// Definición de la tienda (store) 'auth' utilizando Pinia.
+// Esta tienda maneja la autenticación del usuario y la gestión de notas.
 const useAuthStore = defineStore('auth', {
+  // El estado (state) almacena las variables reactivas de la aplicación.
   state: () => {
     return {
-      token: null as string | null,
-      baseURL: 'http://127.0.0.1:8000/api',
-      notes: [] as Array<{ id: number; content: string }>,
+      token: null as string | null, // Token de autenticación (JWT) recibido del servidor
+      baseURL: 'http://127.0.0.1:8000/api', // URL base de la API del backend
+      notes: [] as Array<{ id: number; content: string }>, // Lista de notas del usuario
     }
   },
   actions: {
+    // Acción para registrar un nuevo usuario en el sistema.
+    // Recibe nombre, email y contraseña, y realiza una petición POST al endpoint de registro.
     async register(name: string, email: string, password: string) {
-      // Registration logic here
       const uri = `${this.baseURL}/auth/register`
       const rawResponse = await fetch(uri, {
         method: 'POST',
@@ -33,8 +37,9 @@ const useAuthStore = defineStore('auth', {
         return true
       }
     },
+    // Acción para iniciar sesión (login).
+    // Envía las credenciales al servidor y, si es exitoso, guarda el token recibido.
     async login(email: string, password: string) {
-      // Login logic here
       const uri = `${this.baseURL}/auth/login`
       const rawResponse = await fetch(uri, {
         method: 'POST',
@@ -43,8 +48,8 @@ const useAuthStore = defineStore('auth', {
           Accept: 'application/json',
         },
         body: JSON.stringify({
-          'email': email,
-          'password': password,
+          email: email,
+          password: password,
         }),
       })
       const response = await rawResponse.json()
@@ -57,8 +62,9 @@ const useAuthStore = defineStore('auth', {
         return true
       }
     },
+    // Acción para obtener todas las notas del usuario.
+    // Realiza una petición GET enviando el token de autorización en los headers.
     async getNotes() {
-      // Fetch notes logic here
       const uri = `${this.baseURL}/notes`
       const rawResponse = await fetch(uri, {
         method: 'GET',
@@ -72,8 +78,9 @@ const useAuthStore = defineStore('auth', {
       this.notes = response.notes
       return this.notes
     },
+    // Acción para crear una nueva nota.
+    // Envía el contenido de la nota al servidor mediante una petición POST.
     async createNote(content: string) {
-      // Create note logic here
       const uri = `${this.baseURL}/notes`
       const rawResponse = await fetch(uri, {
         method: 'POST',
@@ -87,7 +94,7 @@ const useAuthStore = defineStore('auth', {
         }),
       })
       const response = await rawResponse.json()
-      if(response.status == false){
+      if (response.status == false) {
         return false
       } else {
         this.notes.push(response.note)
